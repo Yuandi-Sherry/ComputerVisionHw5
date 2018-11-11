@@ -12,7 +12,6 @@ public:
 	std::vector<Point> pointVector; // 点集合
 	std::vector<Edge> edgeVector; 
 	Delaunay(const Point (&boundary4Points) [4]) {
-		cout << "Delaunay constructor" << endl;
 		// 初始化：构造超级三角形，包含所有散点，放入三角形链表
 		initialize(boundary4Points);
 
@@ -72,8 +71,7 @@ public:
 				affectingTriangles[j]--;
 			}
 		}
-		cout << "delete " << affectingTriangles.size()<< " affectingTriangles" << endl;
-
+		
 		// 将插入点同影响三角形的全部顶点连接起来
 		for(int i = 0; i < boundaryEdges.size(); i++) {
 			Triangle newTriangle(boundaryEdges[i].point1ID, boundaryEdges[i].point2ID, pointVector.size() - 1);
@@ -100,7 +98,6 @@ public:
 			}
 			triangleVector.push_back(newTriangle);
 		}
-		cout << "input " << boundaryEdges.size()<< " triangles" << endl;
 	}	
 
 	bool isInCircle(const double & x, const double & y, const double & r, const Point & newPoint) {

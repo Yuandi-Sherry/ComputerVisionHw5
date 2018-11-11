@@ -75,6 +75,9 @@ private:
 		basicPoints[3] = lowerRight;
 
 		Delaunay mesh(basicPoints);
+		for(int i = 0; i < inputPointSet.size(); i++) {
+			mesh.addPoint(inputPointSet[i].x, inputPointSet[i].y);
+		}
 		//测试三角分割
 		const unsigned char color[3] = { 0, 255, 0 };
 		for(int i = 0; i< mesh.triangleVector.size(); i++) {
