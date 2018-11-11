@@ -3,12 +3,15 @@
 class Point
 {
 public:
-	Point(double x, double y) {
+	Point() {
+		
+	}
+	Point(const int& x, const int& y) {
 		this->x = x;
 		this->y = y;
 	}
 	~Point() {
-		
+
 	}
 	int x, y;	
 };

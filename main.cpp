@@ -5,7 +5,6 @@ using namespace std;
 using namespace cimg_library;
 int main()
 {
-	CImg<unsigned char> img("point1.bmp");
-	Morphing morphing("jsjskd");
+	Morphing morphing("point1.bmp", "point2.bmp");
 	return 0;
 }
