@@ -10,6 +10,7 @@
 #include <iostream>
 #include "Delaunay.h"
 #include "BNAlgorithm.h"
+#include "Matrix.h"
 using namespace std;
 using namespace cimg_library;
 class Morphing
@@ -19,7 +20,15 @@ public:
 		initialize(imgPath1, imgPath2);
 		generateMesh(img1,pointsSet1, mesh1);
 		generateMesh(img2,pointsSet2, mesh2);
-		getMidTriangle();
+		mesh1.sortTriangle();
+		midTriangle = getMidTriangle();
+		/*for(int i = 0; i <mesh1.triangleVector.size(); i++) {
+			if(mesh1.triangleVector[i].vertices[0] != mesh2.triangleVector[i].vertices[0]
+				|| mesh1.triangleVector[i].vertices[1] != mesh2.triangleVector[i].vertices[1]
+				|| mesh1.triangleVector[i].vertices[2] != mesh2.triangleVector[i].vertices[2])
+			cout << " not same " << endl;
+		}*/
+		running();
 	}
 	~Morphing() {
 
@@ -32,6 +41,7 @@ private:
 	Delaunay mesh2;
 	CImg<unsigned char> img1;
 	CImg<unsigned char> img2;
+	std::vector<std::vector<Triangle> > midTriangle;
 	/**
 	 * 读取文件，将两幅图像的特征点分别加入对应的vector中
 	 */
@@ -65,6 +75,16 @@ private:
 			pointsSet2.push_back(newPoint2);
 		}
 		inFile.close();
+
+		//修改图片大小
+		double XRate = (double)img1.width()/img2.width();
+		double YRate = (double)img1.height()/img2.height();
+		cout << "XRate: " << XRate << "  YRate: " << YRate << endl;
+		for(int i = 0; i < pointsSet2.size(); i++) {
+			pointsSet2[i].x*=XRate;
+			pointsSet2[i].y*=YRate;
+		} 
+		img2.resize(img1.width(), img1.height());
 	}
 
 	void generateMesh(CImg<unsigned char>& inputImg, const std::vector<Point>& inputPointSet, Delaunay & mesh) {
@@ -83,6 +103,8 @@ private:
 		for(int i = 0; i < inputPointSet.size(); i++) {
 			mesh.addPoint(inputPointSet[i].x, inputPointSet[i].y);
 		}
+		
+		
 	}
 
 	/** 
@@ -104,8 +126,48 @@ private:
 	}*/
 
 	// 计算变换矩阵
-	std::vector<std::vector<int> > transformMatrix () {
+	Matrix transformMatrix (const int & frame, const int & n) {
+		// 计算当前位置的三角形
+		std::vector<std::vector<double> > beforeData;
+		std::vector<double> v;
+		for(int j = 0; j < 3; j++) {
+			v.push_back(midTriangle[frame][n].points[j].x);
+		}
+		beforeData.push_back(v);
 
+		v.clear();
+		for(int j = 0; j < 3; j++) {
+			v.push_back(midTriangle[frame][n].points[j].y);
+		}
+		beforeData.push_back(v);
+		v.clear();
+		for(int j = 0; j < 3; j++) {
+			v.push_back(1);
+		}
+		beforeData.push_back(v);
+		Matrix before(3,3,beforeData);
+		
+		// 计算下一帧的三角形
+		std::vector<std::vector<double> > afterData;
+		v.clear();
+		for(int j = 0; j < 3; j++) {
+			v.push_back(midTriangle[frame+1][n].points[j].x);
+		}
+		afterData.push_back(v);
+
+		v.clear();
+		for(int j = 0; j < 3; j++) {
+			v.push_back(midTriangle[frame+1][n].points[j].y);
+		}
+		afterData.push_back(v);
+		v.clear();
+		for(int j = 0; j < 3; j++) {
+			v.push_back(1);
+		}
+		afterData.push_back(v);
+		Matrix after(2, 3, afterData);
+		Matrix trans = after*before.getInverse();
+		return trans;
 	}
 
 	// 计算中间三角形
@@ -135,16 +197,33 @@ private:
 			}
 			midTriangle.push_back(triangleVectorPerFrame);
 		}
+		const unsigned char color[3] = { 0, 255, 0 };
+		//for(int j = 0; j <= FRAMESNUMBER; j++) {
+			for (int i = 0; i < mesh1.triangleVector.size(); i++) {
+				Triangle temp = mesh1.triangleVector[i];
+				Point p1 = midTriangle[6][i].points[0];
+				Point p2 = midTriangle[6][i].points[1];
+				Point p3 = midTriangle[6][i].points[2];
+				img1.draw_triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, color, 1, ~0U);
+			}
+			img1.display();
+		//}
+		
 
-		/*const unsigned char color[3] = { 0, 255, 0 };
-		for (int i = 0; i < mesh1.triangleVector.size(); i++) {
-			Triangle temp = mesh1.triangleVector[i];
-			Point p1 = midTriangle[11][i].points[0];
-			Point p2 = midTriangle[11][i].points[1];
-			Point p3 = midTriangle[11][i].points[2];
-			img1.draw_triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, color, 1, ~0U);
+		return midTriangle;
+		
+	}
+
+
+	void running() {
+		std::vector<std::vector<Matrix> > transformMatrices;
+		for(int i = 0; i < FRAMESNUMBER; i++) {
+			std::vector<Matrix> tempRow;
+			for(int j = 0; j < mesh1.triangleVector.size(); j++) {
+				tempRow.push_back(transformMatrix(i,j));
+			}
 		}
-		img1.display();*/
+
 	}
 };
 #endif

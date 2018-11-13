@@ -5,6 +5,31 @@
 #include "Point.h"
 #include "Edge.h"
 
+bool cmp(Triangle a, Triangle b) {
+	cout << "--------" << b.vertices[1] << " " <<  a.vertices[0] << endl;
+    if(a.vertices[0] > b.vertices[0]) {
+    	return 1;
+    } /*else if (a.vertices[0] < b.vertices[0]) {
+    	return -1;
+    } else {
+    	if(a.vertices[1] > b.vertices[1]) {
+	    	return 1;
+	    } else if (a.vertices[1] < b.vertices[1]) {
+	    	return -1;
+	    } else {
+			if(a.vertices[2] > b.vertices[2]) {
+		    	return 1;
+		    } else if (a.vertices[2] < b.vertices[2]) {
+		    	return -1;
+			} else {
+				return -1;
+			} 
+ 	    }
+    }*/
+
+    return -1;
+}
+
 class Delaunay
 {
 public:
@@ -98,6 +123,19 @@ public:
 			triangleVector.push_back(newTriangle);
 		}
 	}	
+
+	void sortTriangle() {
+		cout << "sort" << endl;
+		for(int i = 0; i < triangleVector.size(); i++) {
+			cout << triangleVector[i].vertices[0] << endl;
+		}
+		sort(triangleVector.begin(), triangleVector.end(), cmp);
+		for(int i =0; i < triangleVector.size(); i++) {
+			cout << triangleVector[i].vertices[0] << " " 
+				<< triangleVector[i].vertices[1] << " " 
+				<< triangleVector[i].vertices[2] << endl;
+		}
+	}
 
 	bool isInCircle(const double & x, const double & y, const double & r, const Point & newPoint) {
 		// 新点到圆心的距离小于圆半径即在圆内
