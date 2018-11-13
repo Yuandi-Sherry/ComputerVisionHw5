@@ -26,9 +26,16 @@ public:
 		edges[1] = temp2;
 		edges[2] = temp3;
 	}
+
+	Triangle(const Point & point1, const Point & point2, const Point & point3) {
+		points[0] = point1;
+		points[1] = point2;
+		points[2] = point3;
+	}
 	~Triangle() {
 
 	}
+	Point points[3];
 	int vertices[3]; // 三个顶点对应的特征点在Morphing的PointSet中的下标
 	Edge edges[3]; // 三角形的三条边
 	double x;

@@ -11,9 +11,8 @@ public:
 	std::vector<Triangle> triangleVector; // 三角形集合
 	std::vector<Point> pointVector; // 点集合
 	std::vector<Edge> edgeVector; 
-	Delaunay(const Point (&boundary4Points) [4]) {
-		// 初始化：构造超级三角形，包含所有散点，放入三角形链表
-		initialize(boundary4Points);
+	
+	Delaunay() {
 
 	}
 	~Delaunay() {
