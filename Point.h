@@ -6,7 +6,13 @@ public:
 	Point() {
 
 	}
-	Point(const double x, const double y) {
+
+	Point(const Point & otherPoint) {
+		this->x = otherPoint.x;
+		this->y = otherPoint.y;
+	}
+
+	Point(double x, double y) {
 		this->x = x;
 		this->y = y;
 	}

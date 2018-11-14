@@ -20,8 +20,8 @@ public:
 		initialize(imgPath1, imgPath2);
 		generateMesh(img1,pointsSet1, mesh1);
 		generateMesh(img2,pointsSet2, mesh2);
-		mesh1.sortTriangle();
-		midTriangle = getMidTriangle();
+		//mesh1.sortTriangle();
+		midTrianglesPoints = getMidTriangle();
 		/*for(int i = 0; i <mesh1.triangleVector.size(); i++) {
 			if(mesh1.triangleVector[i].vertices[0] != mesh2.triangleVector[i].vertices[0]
 				|| mesh1.triangleVector[i].vertices[1] != mesh2.triangleVector[i].vertices[1]
@@ -41,7 +41,7 @@ private:
 	Delaunay mesh2;
 	CImg<unsigned char> img1;
 	CImg<unsigned char> img2;
-	std::vector<std::vector<Triangle> > midTriangle;
+	std::vector<std::vector<Point> > midTrianglesPoints;
 	/**
 	 * 读取文件，将两幅图像的特征点分别加入对应的vector中
 	 */
@@ -79,7 +79,6 @@ private:
 		//修改图片大小
 		double XRate = (double)img1.width()/img2.width();
 		double YRate = (double)img1.height()/img2.height();
-		cout << "XRate: " << XRate << "  YRate: " << YRate << endl;
 		for(int i = 0; i < pointsSet2.size(); i++) {
 			pointsSet2[i].x*=XRate;
 			pointsSet2[i].y*=YRate;
@@ -126,18 +125,18 @@ private:
 	}*/
 
 	// 计算变换矩阵
-	Matrix transformMatrix (const int & frame, const int & n) {
+	Matrix transformMatrix (const int & frame, const int & n, const Delaunay & mesh) {
 		// 计算当前位置的三角形
 		std::vector<std::vector<double> > beforeData;
 		std::vector<double> v;
 		for(int j = 0; j < 3; j++) {
-			v.push_back(midTriangle[frame][n].points[j].x);
+			v.push_back(midTrianglesPoints[frame][mesh.triangleVector[n].vertices[j]].x);
 		}
 		beforeData.push_back(v);
 
 		v.clear();
 		for(int j = 0; j < 3; j++) {
-			v.push_back(midTriangle[frame][n].points[j].y);
+			v.push_back(midTrianglesPoints[frame][mesh.triangleVector[n].vertices[j]].y);
 		}
 		beforeData.push_back(v);
 		v.clear();
@@ -151,13 +150,13 @@ private:
 		std::vector<std::vector<double> > afterData;
 		v.clear();
 		for(int j = 0; j < 3; j++) {
-			v.push_back(midTriangle[frame+1][n].points[j].x);
+			v.push_back(midTrianglesPoints[frame+1][mesh.triangleVector[n].vertices[j]].x);
 		}
 		afterData.push_back(v);
 
 		v.clear();
 		for(int j = 0; j < 3; j++) {
-			v.push_back(midTriangle[frame+1][n].points[j].y);
+			v.push_back(midTrianglesPoints[frame+1][mesh.triangleVector[n].vertices[j]].y);
 		}
 		afterData.push_back(v);
 		v.clear();
@@ -171,59 +170,75 @@ private:
 	}
 
 	// 计算中间三角形
-	std::vector<std::vector<Triangle> > getMidTriangle () {
-		std::vector<std::vector<Triangle> > midTriangle;
+	std::vector<std::vector<Point> > getMidTriangle () {
+		std::vector<std::vector<Point> > midTrianglesPoints;
 		for(int i = 0; i <= FRAMESNUMBER; i++) {
-			std::vector<Triangle> triangleVectorPerFrame;
-			for(int j = 0; j < mesh1.triangleVector.size(); j++) {
+			std::vector<Point> newPointsPerFrame; // 每一帧每一点的坐标
+			for(int j = 0; j < mesh1.pointVector.size(); j++) {
 				double x, y;
-				x = mesh1.pointVector[mesh1.triangleVector[j].vertices[0]].x * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[0]].x * (double)i/FRAMESNUMBER;
-				y = mesh1.pointVector[mesh1.triangleVector[j].vertices[0]].y * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[0]].y * (double)i/FRAMESNUMBER;	
+				x = mesh1.pointVector[j].x * (1-(double)i/FRAMESNUMBER) 
+					+ mesh2.pointVector[j].x * (double)i/FRAMESNUMBER;
+				y = mesh1.pointVector[j].y * (1-(double)i/FRAMESNUMBER) 
+					+ mesh2.pointVector[j].y * (double)i/FRAMESNUMBER;	
 				Point point1(x,y);
-				x = mesh1.pointVector[mesh1.triangleVector[j].vertices[1]].x * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[1]].x * (double)i/FRAMESNUMBER;
-				y = mesh1.pointVector[mesh1.triangleVector[j].vertices[1]].y * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[1]].y * (double)i/FRAMESNUMBER;
-				Point point2(x,y);
-				x = mesh1.pointVector[mesh1.triangleVector[j].vertices[2]].x * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[2]].x * (double)i/FRAMESNUMBER;
-				y = mesh1.pointVector[mesh1.triangleVector[j].vertices[2]].y * (1-(double)i/FRAMESNUMBER) 
-					+ mesh2.pointVector[mesh2.triangleVector[j].vertices[2]].y * (double)i/FRAMESNUMBER;
-				Point point3(x,y);	
-				Triangle tempTriangle(point1, point2, point3);
-				triangleVectorPerFrame.push_back(tempTriangle);
+				newPointsPerFrame.push_back(point1);
 			}
-			midTriangle.push_back(triangleVectorPerFrame);
+			midTrianglesPoints.push_back(newPointsPerFrame);
 		}
 		const unsigned char color[3] = { 0, 255, 0 };
 		//for(int j = 0; j <= FRAMESNUMBER; j++) {
 			for (int i = 0; i < mesh1.triangleVector.size(); i++) {
 				Triangle temp = mesh1.triangleVector[i];
-				Point p1 = midTriangle[6][i].points[0];
-				Point p2 = midTriangle[6][i].points[1];
-				Point p3 = midTriangle[6][i].points[2];
+				Point p1 = midTrianglesPoints[6][mesh1.triangleVector[i].vertices[0]];
+				Point p2 = midTrianglesPoints[6][mesh1.triangleVector[i].vertices[1]];
+				Point p3 = midTrianglesPoints[6][mesh1.triangleVector[i].vertices[2]];
 				img1.draw_triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, color, 1, ~0U);
 			}
 			img1.display();
 		//}
 		
 
-		return midTriangle;
+		return midTrianglesPoints;
 		
+	}
+
+	bool isInTriangle(const Triangle & triangle, int x, int y, int frame) {
+		Point pointA(midTrianglesPoints[frame][triangle.vertices[0]]);
+		Point pointB(midTrianglesPoints[frame][triangle.vertices[1]]);
+		Point pointC(midTrianglesPoints[frame][triangle.vertices[2]]);
+		Point pointP(x,y);
+		// 下面Point表示向量
+		Point v0 = pointC - pointA;
+		Point v1 = pointB - pointA;
+		Point v2 = pointP - pointA;
+		double u = ((v1*v2)*(v2*v0)-(v1*v0)*(v2*v1)) / ((v0*v0)*(v1*v1) - (v1*v0)*(v0*v1));
+		double v = ((v0*v0)*(v2*v1)-(v0*v1)*(v2*v0))/((v0*v0)*(v1*v1) - (v0*v1)*(v1*v0));
+		if(u >= 0 && v >= 0 && u+v <= 1) {
+			return true;
+		}
+		return false;
 	}
 
 
 	void running() {
-		std::vector<std::vector<Matrix> > transformMatrices;
+		std::vector<std::vector<Matrix> > transformMatrices; // 变换矩阵数组
 		for(int i = 0; i < FRAMESNUMBER; i++) {
 			std::vector<Matrix> tempRow;
-			for(int j = 0; j < mesh1.triangleVector.size(); j++) {
-				tempRow.push_back(transformMatrix(i,j));
+			cimg_forXY(img1, x, y) {
+				for(int j = 0; j < mesh1.triangleVector.size(); j++) {
+					// 如果该像素在三角形内部，则对它使用对应三角形的矩阵变换
+					if(isInTriangle(mesh1.triangleVector[j], x, y, i)) {
+
+						//tempRow.push_back(transformMatrix(i,j));
+					}
+				}
 			}
+			
 		}
 
+
 	}
+
+	
 };
 #endif

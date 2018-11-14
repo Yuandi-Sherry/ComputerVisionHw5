@@ -160,7 +160,6 @@ public:
     	}
     	Matrix newMatrix(this->row, this->column, newMatrixData);
     	return newMatrix;
-
     }
 	
 };
