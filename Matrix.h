@@ -21,6 +21,18 @@ public:
 		}
 	}
 
+	Matrix (const Matrix & otherMatrix) {
+		row = otherMatrix.row;
+		column = otherMatrix.column;
+		for(int i = 0; i < row; i++) {
+			std::vector<double> tempRow;
+			for(int j = 0; j < column; j++) {
+				tempRow.push_back(otherMatrix.data[i][j]);
+			}
+			this->data.push_back(tempRow);
+		}
+	}
+
 	Matrix() {
 		row = -1;
 		column = -1;

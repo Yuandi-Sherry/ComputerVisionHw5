@@ -5,29 +5,26 @@
 #include "Point.h"
 #include "Edge.h"
 
-bool cmp(Triangle a, Triangle b) {
-	cout << "--------" << b.vertices[1] << " " <<  a.vertices[0] << endl;
+bool cmp(const Triangle & a, const Triangle & b) {
     if(a.vertices[0] > b.vertices[0]) {
     	return 1;
-    } /*else if (a.vertices[0] < b.vertices[0]) {
-    	return -1;
+    } else if (a.vertices[0] < b.vertices[0]) {
+    	return 0;
     } else {
     	if(a.vertices[1] > b.vertices[1]) {
 	    	return 1;
 	    } else if (a.vertices[1] < b.vertices[1]) {
-	    	return -1;
+	    	return 0;
 	    } else {
 			if(a.vertices[2] > b.vertices[2]) {
 		    	return 1;
 		    } else if (a.vertices[2] < b.vertices[2]) {
-		    	return -1;
+		    	return 0;
 			} else {
-				return -1;
+				return 0;
 			} 
  	    }
-    }*/
-
-    return -1;
+    }
 }
 
 class Delaunay
@@ -125,15 +122,11 @@ public:
 	}	
 
 	void sortTriangle() {
-		cout << "sort" << endl;
-		for(int i = 0; i < triangleVector.size(); i++) {
-			cout << triangleVector[i].vertices[0] << endl;
-		}
 		sort(triangleVector.begin(), triangleVector.end(), cmp);
-		for(int i =0; i < triangleVector.size(); i++) {
-			cout << triangleVector[i].vertices[0] << " " 
-				<< triangleVector[i].vertices[1] << " " 
-				<< triangleVector[i].vertices[2] << endl;
+		for(int i = 0; i < triangleVector.size(); i++) {
+			cout << triangleVector[i].vertices[0] << ' '
+				 << triangleVector[i].vertices[1] << ' '
+				 << triangleVector[i].vertices[2] << endl;
 		}
 	}
 
