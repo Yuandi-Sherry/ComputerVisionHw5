@@ -21,9 +21,9 @@ mingw32-make compile
 
 - 使用PS描出特征点，结果如下：
 
-  <img src="./imgs\point1.jpg" width="400" />
+  <img src="./imgs/point1.jpg" width="400" />
 
-  <img src="./imgs\point2.jpg" width="400" />
+  <img src="./imgs/point2.jpg" width="400" />
 
 - 获得的坐标点如下：第一列为图1横坐标、第二列为图1纵坐标，第三列为图2横坐标、第四列为图2纵坐标。
 - <img src="./imgs/table.png" width="400" />
@@ -82,9 +82,9 @@ mingw32-make compile
 
 - 这一步骤完成后可以获得下面的结果：
 
-  <img src="./imgs\temp1.bmp" width="400" />
+  <img src="./imgs/temp1.bmp" width="400" />
 
-  <img src="./imgs\temp2.bmp" width="400" />
+  <img src="./imgs/temp2.bmp" width="400" />
 
 ### 获取中间帧的点坐标
 
@@ -102,14 +102,7 @@ mingw32-make compile
 ### 对每一帧进行变换
 
 - 首先计算出初始帧和最后帧的每个三角形构成的矩阵：
-  $$
-  \left[                
-  \begin{array}{lcr}     
-  A_x & B_x & C_x \\          
-  A_y & B_x & C_y 
-  \end{array}            
-  \right]
-  $$
+  <a href="https://www.codecogs.com/eqnedit.php?latex=\left[&space;\begin{array}{lcr}&space;A_x&space;&&space;B_x&space;&&space;C_x&space;\\&space;A_y&space;&&space;B_x&space;&&space;C_y&space;\end{array}&space;\right]" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\left[&space;\begin{array}{lcr}&space;A_x&space;&&space;B_x&space;&&space;C_x&space;\\&space;A_y&space;&&space;B_x&space;&&space;C_y&space;\end{array}&space;\right]" title="\left[ \begin{array}{lcr} A_x & B_x & C_x \\ A_y & B_x & C_y \end{array} \right]" /></a>
   并存入`start`和`end`的矩阵类型数组。
 
 - 新建图像作为中间帧，遍历中间帧的每个像素：
@@ -117,28 +110,11 @@ mingw32-make compile
   - 遍历三角形数组获得其在当前帧所在的三角形，这里使用重心法（`isInTriangle`函数判断点在三角形内）
   - 获得其变换矩阵`trans`满足：
 
-  $$
-  \left[                
-  \begin{array}{lcr}     
-  A_x & B_x & C_x \\          
-  A_y & B_x & C_y 
-  \end{array}            
-  \right] = trans \times\left[                
-  \begin{array}{lcr}     
-  A_x' & B_x' & C_x' \\          
-  A_y' & B_x' & C_y' \\
-  1 & 1 & 1
-  \end{array}            
-  \right]
-  $$
-
+  <a href="https://www.codecogs.com/eqnedit.php?latex=\left[&space;\begin{array}{lcr}&space;A_x&space;&&space;B_x&space;&&space;C_x&space;\\&space;A_y&space;&&space;B_x&space;&&space;C_y&space;\end{array}&space;\right]&space;=&space;trans&space;\times\left[&space;\begin{array}{lcr}&space;A_x'&space;&&space;B_x'&space;&&space;C_x'&space;\\&space;A_y'&space;&&space;B_x'&space;&&space;C_y'&space;\\&space;1&space;&&space;1&space;&&space;1&space;\end{array}&space;\right]" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\left[&space;\begin{array}{lcr}&space;A_x&space;&&space;B_x&space;&&space;C_x&space;\\&space;A_y&space;&&space;B_x&space;&&space;C_y&space;\end{array}&space;\right]&space;=&space;trans&space;\times\left[&space;\begin{array}{lcr}&space;A_x'&space;&&space;B_x'&space;&&space;C_x'&space;\\&space;A_y'&space;&&space;B_x'&space;&&space;C_y'&space;\\&space;1&space;&&space;1&space;&&space;1&space;\end{array}&space;\right]" title="\left[ \begin{array}{lcr} A_x & B_x & C_x \\ A_y & B_x & C_y \end{array} \right] = trans \times\left[ \begin{array}{lcr} A_x' & B_x' & C_x' \\ A_y' & B_x' & C_y' \\ 1 & 1 & 1 \end{array} \right]" /></a>
   > 计算第一幅图的部分时左边矩阵为第一帧对应三角形的三点坐标，计算第二幅图的部分时右边矩阵为第二帧对应的三角形的三点坐标。右边是当前帧该三角形的三点坐标用1补为方阵形成的矩阵。
 
   ​	当前坐标在原图（第一帧或者最后一帧）中的位置通过下面公式计算：
-  $$
-  \left[
-  \begin{array}{lcr}P_x \\ P_y \end{array}            \right] = trans \times\left[                \begin{array}{lcr}    x \\ y \\1\end{array}            \right]
-  $$
+ <a href="https://www.codecogs.com/eqnedit.php?latex=\left[&space;\begin{array}{lcr}P_x&space;\\&space;P_y&space;\end{array}&space;\right]&space;=&space;trans&space;\times\left[&space;\begin{array}{lcr}&space;x&space;\\&space;y&space;\\1\end{array}&space;\right]" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\left[&space;\begin{array}{lcr}P_x&space;\\&space;P_y&space;\end{array}&space;\right]&space;=&space;trans&space;\times\left[&space;\begin{array}{lcr}&space;x&space;\\&space;y&space;\\1\end{array}&space;\right]" title="\left[ \begin{array}{lcr}P_x \\ P_y \end{array} \right] = trans \times\left[ \begin{array}{lcr} x \\ y \\1\end{array} \right]" /></a>
   ​	由于获得的坐标不一定为整数，使用线性插值的方法取周围四个整数点坐标进行加权插值（在`bilinearInterpolate`函数中实现，这里注意数组越界问题）。
 
   ​	对在第一帧和最后一帧获得的线性插值的像素值结果进行双线性插值之后，调整透明度，获得中间帧图像：
@@ -151,11 +127,11 @@ mingw32-make compile
 
 > 动图为用ps制作的，在Results文件夹中的`makeGIF.gif`文件
 
-<img src="./imgs\results.jpg" width="600" />
+<img src="./imgs/results.JPG" width="600" />
 
 GIF
 
-<img src="./Results\makeGIF.gif" width="300" />
+<img src="./Results/makeGIF.gif" width="300" />
 
 ## 实验思考
 
