@@ -21,12 +21,12 @@ mingw32-make compile
 
 - 使用PS描出特征点，结果如下：
 
-  <img src="./imgs\point1.jpg" width="400" />
+  <img src="./imgs\point1.jpg" width="200" />
 
-  <img src="./imgs\point2.jpg" width="400" />
+  <img src="./imgs\point2.jpg" width="200" />
 
 - 获得的坐标点如下：第一列为图1横坐标、第二列为图1纵坐标，第三列为图2横坐标、第四列为图2纵坐标。
-- <img src="./imgs/table.png" width="400" />
+- <img src="./imgs/table.png" width="200" />
 
 ### 使用Delaunay算法对图像进行三角形分割
 
@@ -82,9 +82,9 @@ mingw32-make compile
 
 - 这一步骤完成后可以获得下面的结果：
 
-  <img src="./imgs\temp1.bmp" width="400" />
+  <img src="./imgs\temp1.bmp" width="200" />
 
-  <img src="./imgs\temp2.bmp" width="400" />
+  <img src="./imgs\temp2.bmp" width="200" />
 
 ### 获取中间帧的点坐标
 
@@ -151,11 +151,7 @@ mingw32-make compile
 
 > 动图为用ps制作的，在Results文件夹中的`makeGIF.gif`文件
 
-<img src="./imgs\results.jpg" width="600" />
-
-GIF
-
-<img src="./Results\makeGIF.gif" width="300" />
+<img src="./imgs\results.jpg" width="400" />
 
 ## 实验思考
 
