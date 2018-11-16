@@ -214,11 +214,11 @@ void Morphing::running() {
 		cimg_forXY(img1, x, y) {
 			//bool flag = 0; // 未匹配三角形
 			// 判断和上一个像素在同一个三角形中
-			if(!isInTriangle(triangleID, x, y, i)) {
+			if(!isInTriangle(triangleID, x, y, i-1)) {
 				// 遍历所有的三角形看当前坐标在哪个三角形中
 				for(int j = 0; j < mesh1.triangleVector.size(); j++) {
 					// 如果该像素在三角形内部，则对它使用对应三角形的矩阵变换
-					if(isInTriangle(j, x, y, i)) {
+					if(isInTriangle(j, x, y, i-1)) {
 						triangleID = j;
 						//flag = 1;
 						break;
@@ -226,7 +226,7 @@ void Morphing::running() {
 				}
 			}
 			
-			Matrix T1(transformMatrix(i,triangleID, mesh1, start)); // 获得变换矩阵
+			Matrix T1(transformMatrix(i-1,triangleID, mesh1, start)); // 获得变换矩阵
 			// 获得当前像素点对应的向量
 
 			std::vector<std::vector<double> > vectorData;
@@ -243,7 +243,7 @@ void Morphing::running() {
 			Matrix ans1 = T1*pointVec1;
 			Point point1(ans1.data[0][0], ans1.data[1][0]); // 图一中点在该帧位置
 
-			Matrix T2(transformMatrix(i,triangleID, mesh2, end)); // 获得变换矩阵
+			Matrix T2(transformMatrix(i-1,triangleID, mesh2, end)); // 获得变换矩阵
 			// 获得当前像素点对应的向量
 			vectorData.clear();
 			temp.clear();
